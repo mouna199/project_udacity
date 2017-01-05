@@ -46,6 +46,8 @@ def shape_element(element):
         for tag in element.iter("tag"):
             if problemchars.search(tag.attrib["k"]):
                 pass
+            #elif tag.attrib["k"].startswith("is_in"):
+               # tag.attriv["k"]="city"
             elif tag.attrib["k"].startswith("addr:"):
                 if tag.attrib["k"].startswith("addr:street"):
                     tag.attrib["v"] = update_name(tag.attrib["v"], mapping)
@@ -68,26 +70,25 @@ def shape_element(element):
         return None
 
 
-def process_map(file_in, pretty=False):
+
+def process_map(file_in, pretty = False):
     # You do not need to change this file
     file_out = "{0}.json".format(file_in)
     data = []
     with codecs.open(file_out, "w") as fo:
+        fo.write("[")
         for _, element in ET.iterparse(file_in):
             el = shape_element(element)
             if el:
-
-                #if pretty:
-                   # fo.write(json.dumps(el, indent=2) + "\n")
-                #else:
-                fo.write(json.dumps(el) + ","+"\n")
-
+                data.append(el)
+                fo.write(json.dumps(el)+"," + "\n")
+        fo.write("]")
+# make sure please to delete ',' from the end of the osm file or the insertion of the data into mongodb won't work
     return data
 
 
 def test():
     data = process_map('southampton.osm', True)
-
 
 if __name__ == "__main__":
     test()
